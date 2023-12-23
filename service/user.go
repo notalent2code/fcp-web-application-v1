@@ -5,6 +5,7 @@ import (
 	repo "a21hc3NpZ25tZW50/repository"
 	"errors"
 	"time"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/golang-jwt/jwt"
 )
@@ -54,8 +55,9 @@ func (s *userService) Login(user *model.User) (token *string, err error) {
 		return nil, errors.New("user not found")
 	}
 
-	if user.Password != dbUser.Password {
-		return nil, errors.New("wrong email or password")
+	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
+	if err != nil {
+		return nil, errors.New("invalid password")
 	}
 
 	expirationTime := time.Now().Add(20 * time.Minute)
