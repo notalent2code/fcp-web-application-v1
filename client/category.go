@@ -53,13 +53,13 @@ func (c *categoryClient) CategoryList(token string) ([]*model.Category, error) {
 		return nil, errors.New("status code not 200")
 	}
 
-	var Categorys []*model.Category
-	err = json.Unmarshal(b, &Categorys)
+	var Categories []*model.Category
+	err = json.Unmarshal(b, &Categories)
 	if err != nil {
 		return nil, err
 	}
 
-	return Categorys, nil
+	return Categories, nil
 }
 
 func (c *categoryClient) AddCategory(token, name string) (respCode int, err error) {
