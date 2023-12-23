@@ -5,6 +5,7 @@ import (
 	"a21hc3NpZ25tZW50/service"
 	"net/http"
 	"time"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -37,13 +38,19 @@ func (u *userAPI) Register(c *gin.Context) {
 		return
 	}
 
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.NewErrorResponse("error internal server"))
+		return
+	}
+
 	var recordUser = model.User{
 		Fullname: user.Fullname,
 		Email:    user.Email,
-		Password: user.Password,
+		Password: string(hash),
 	}
 
-	recordUser, err := u.userService.Register(&recordUser)
+	_, err = u.userService.Register(&recordUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse("error internal server"))
 		return
